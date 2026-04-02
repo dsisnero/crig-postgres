@@ -233,12 +233,12 @@ module CrigPostgres
           embedding_text = embedding.document
           embedding_vec = embedding.vec
 
-          # Convert vector to pgvector format: '[1.0,2.0,3.0]'
-          vec_str = "[#{embedding_vec.map(&.to_s).join(",")}]"
+          # Convert vector to pgvector format using to_json
+          vec_json = embedding_vec.to_json
 
           @db.exec(
-            "INSERT INTO #{@documents_table} (id, document, embedded_text, embedding) VALUES ($1, $2, $3, $4::vector)",
-            args: [id, json_document, embedding_text, vec_str]
+            "INSERT INTO #{@documents_table} (id, document, embedded_text, embedding) VALUES ($1, $2, $3, $4)",
+            args: [id, json_document, embedding_text, vec_json]
           )
         end
       end
@@ -300,13 +300,13 @@ module CrigPostgres
       prompt_embedding = @embedding_model.embed_text(req.query)
       embedding_vec = prompt_embedding.vec
 
-      # Convert vector to pgvector format: '[1.0,2.0,3.0]'
-      vec_str = "[#{embedding_vec.map(&.to_s).join(",")}]"
+      # Convert vector to pgvector format using to_json
+      vec_json = embedding_vec.to_json
 
       query, params = search_query(true, req)
 
       # Build query parameters
-      db_params = [vec_str.as(DB::Any), req.samples.to_i64.as(DB::Any)]
+      db_params = [vec_json.as(DB::Any), req.samples.to_i64.as(DB::Any)]
       params.each do |param|
         db_params << extract_db_value(param)
       end
@@ -333,13 +333,13 @@ module CrigPostgres
       prompt_embedding = @embedding_model.embed_text(req.query)
       embedding_vec = prompt_embedding.vec
 
-      # Convert vector to pgvector format: '[1.0,2.0,3.0]'
-      vec_str = "[#{embedding_vec.map(&.to_s).join(",")}]"
+      # Convert vector to pgvector format using to_json
+      vec_json = embedding_vec.to_json
 
       query, params = search_query(false, req)
 
       # Build query parameters
-      db_params = [vec_str.as(DB::Any), req.samples.to_i64.as(DB::Any)]
+      db_params = [vec_json.as(DB::Any), req.samples.to_i64.as(DB::Any)]
       params.each do |param|
         db_params << extract_db_value(param)
       end
