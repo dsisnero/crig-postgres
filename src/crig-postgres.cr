@@ -124,6 +124,23 @@ module CrigPostgres
       new("#{key} like #{pattern}")
     end
 
+    # Tests whether the value at `key` matches the SQL regex pattern
+    # pattern should be a valid regex
+    def self.similar_to(key : String, pattern : String) : self
+      new("#{key} similar to #{pattern}")
+    end
+
+    # Tests whether the value at `key` is between `low` and `high` (inclusive)
+    def self.between(key : String, low : JSON::Any, high : JSON::Any) : self
+      new("#{key} between $ and $", [low, high])
+    end
+
+    # Tests whether the value at `key` is in the list of values
+    def self.member(key : String, values : Array(JSON::Any)) : self
+      placeholders = values.map { "$" }.join(",")
+      new("#{key} in (#{placeholders})", values)
+    end
+
     # ameba:disable Naming/PredicateName
     def self.is_null(key : String) : self
       new("#{key} is null")

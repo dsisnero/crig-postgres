@@ -75,6 +75,32 @@ describe CrigPostgres do
       end
     end
 
+    describe ".similar_to" do
+      it "creates similar_to filter" do
+        filter = CrigPostgres::PgSearchFilter.similar_to("title", "'%Crystal%'")
+        filter.condition.should eq("title similar to '%Crystal%'")
+        filter.values.should be_empty
+      end
+    end
+
+    describe ".between" do
+      it "creates between filter" do
+        filter = CrigPostgres::PgSearchFilter.between("score", JSON::Any.new(0.5), JSON::Any.new(1.0))
+        filter.condition.should eq("score between $ and $")
+        filter.values.size.should eq(2)
+        filter.values[0].as_f.should eq(0.5)
+        filter.values[1].as_f.should eq(1.0)
+      end
+    end
+
+    describe ".member" do
+      it "creates IN filter" do
+        filter = CrigPostgres::PgSearchFilter.member("category", [JSON::Any.new("science"), JSON::Any.new("tech")])
+        filter.condition.should eq("category in ($,$)")
+        filter.values.size.should eq(2)
+      end
+    end
+
     describe ".is_null" do
       it "creates is null filter" do
         filter = CrigPostgres::PgSearchFilter.is_null("deleted_at")
