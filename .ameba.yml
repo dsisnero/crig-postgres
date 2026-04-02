@@ -1,0 +1,9 @@
+Version: "1.7.0-dev"
+
+Excluded:
+  - spec/**/*.cr
+  - lib/**/*
+  - temp/**/*
+  - vendor
+  - crystal
+  - src/**/*.bak
