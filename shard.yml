@@ -15,6 +15,7 @@ description: |
 dependencies:
   pg:
     github: will/crystal-pg
+    commit: c16d54814405e2b9748d9bddc3d8ce0d41d2190f
 
 development_dependencies:
   ameba:
